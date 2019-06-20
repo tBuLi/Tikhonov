@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>API Outline &#8212; Tikhonov 0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="Definitions" href="definitions.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="api-outline">
+<h1>API Outline<a class="headerlink" href="#api-outline" title="Permalink to this headline">¶</a></h1>
+<p>At the heart of <cite>Tikhonov</cite> is the <cite>Regularize</cite> object. It can be initiated with
+any of the object named in <code class="docutils literal notranslate"><span class="pre">Definitions</span></code>. Some examples include:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">reg</span> <span class="o">=</span> <span class="n">Regularize</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="n">A</span><span class="p">:</span> <span class="n">A_mat</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">y_vec</span><span class="p">})</span>
+<span class="n">reg_result</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+
+<span class="n">reg</span> <span class="o">=</span> <span class="n">Regularize</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="n">H_r</span><span class="p">:</span> <span class="n">H_r_mat</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">y_vec</span><span class="p">})</span>
+<span class="n">reg_result</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+
+<span class="n">I</span> <span class="o">=</span> <span class="n">Identity</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="s1">&#39;lambda&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span> <span class="o">*</span> <span class="n">I</span>
+<span class="n">reg</span> <span class="o">=</span> <span class="n">Regularize</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="n">H_x</span><span class="p">:</span> <span class="n">H_x_mat</span><span class="p">,</span> <span class="n">T</span><span class="p">:</span> <span class="n">T</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">y_vec</span><span class="p">})</span>
+<span class="n">reg_result</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><cite>Tikhonov</cite> will then select the best model to use in each case.</p>
+<p>You can also provide your own model, which has to be a type of
+<a class="reference external" href="https://symfit.readthedocs.io/en/stable/module_docs.html#symfit.core.fit.BaseCallableModel" title="(in symfit v0.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseCallableModel</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">N_x</span><span class="p">,</span> <span class="n">N_y</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;N_x, N_y&#39;</span><span class="p">)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">MatrixSymbol</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="n">N_x</span><span class="p">,</span> <span class="n">N_x</span><span class="p">)</span>
+<span class="n">H_x</span> <span class="o">=</span> <span class="n">MatrixSymbol</span><span class="p">(</span><span class="s1">&#39;H_x&#39;</span><span class="p">,</span> <span class="n">N_x</span><span class="p">,</span> <span class="n">N_x</span><span class="p">)</span>
+<span class="n">W</span> <span class="o">=</span> <span class="n">MatrixSymbol</span><span class="p">(</span><span class="s1">&#39;W&#39;</span><span class="p">,</span> <span class="n">N_x</span><span class="p">,</span> <span class="n">N_x</span><span class="p">)</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">MatrixSymbol</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="n">N_y</span><span class="p">,</span> <span class="n">N_x</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">MatrixSymbol</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">N_y</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">MatrixSymbol</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">N_x</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">MatrixSymbol</span><span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">N_y</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">MatrixSymbol</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">model_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">H_x</span><span class="p">:</span> <span class="n">A</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">A</span><span class="p">,</span>
+    <span class="n">W</span><span class="p">:</span> <span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="n">H_x</span><span class="p">),</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">Inverse</span><span class="p">(</span><span class="n">W</span><span class="p">)</span> <span class="o">*</span> <span class="n">A</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">y</span><span class="p">,</span>
+    <span class="n">r</span><span class="p">:</span> <span class="n">A</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="n">y</span><span class="p">,</span>
+    <span class="n">d</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">r</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">CallableModel</span><span class="p">(</span><span class="n">model_dict</span><span class="p">)</span>
+
+<span class="n">T_mat</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="s1">&#39;lambda&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span> <span class="o">*</span> <span class="n">Identity</span><span class="p">(</span><span class="n">N_x</span><span class="p">)</span>
+<span class="n">reg</span> <span class="o">=</span> <span class="n">Regularize</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                 <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="n">d</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">y_stdev</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">T</span><span class="p">:</span> <span class="n">T_mat</span><span class="p">,</span>
+                       <span class="n">A</span><span class="p">:</span> <span class="n">A_mat</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">y_mat</span><span class="p">}</span>
+<span class="p">)</span>
+<span class="n">reg_result</span> <span class="o">=</span> <span class="n">reg</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>It is important when doing this, to stick to the names defined in <cite>Definitions</cite>.</p>
+<p>Although a lot of work to write down carefully, <cite>symfit</cite> makes this relatively
+easy. And fortunatelly, many such models are already present in <cite>Tikhonov</cite>.</p>
+<div class="section" id="morozov-model">
+<h2>Morozov Model<a class="headerlink" href="#morozov-model" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Tikhonov</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Tikhonov</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="definitions.html">Definitions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Outline</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#morozov-model">Morozov Model</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Module Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="definitions.html" title="previous chapter">Definitions</a></li>
+      <li>Next: <a href="installation.html" title="next chapter">Installation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Martin Roelfs.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/outline.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

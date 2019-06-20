@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Definitions &#8212; Tikhonov 0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Outline" href="outline.html" />
+    <link rel="prev" title="Tutorial" href="tutorial.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="definitions">
+<h1>Definitions<a class="headerlink" href="#definitions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="matrices">
+<h2>Matrices<a class="headerlink" href="#matrices" title="Permalink to this headline">¶</a></h2>
+<p>Starting of, we have the general Tikhonov function</p>
+<div class="math notranslate nohighlight">
+\[J = \frac{1}{2} (A x - y)^T W (A x - y) + \frac{1}{2} \vert \Lambda x \vert^2\]</div>
+<p>where <span class="math notranslate nohighlight">\(\Lambda\)</span> is the regularization matrix, and <span class="math notranslate nohighlight">\(W\)</span> is the weight
+matrix. We want to solve for <span class="math notranslate nohighlight">\(x\)</span> such that <span class="math notranslate nohighlight">\(J\)</span> is minimal:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial J}{\partial x^T} = A^T W (A x - y) + (\Lambda^T \Lambda) x = 0\]</div>
+<p>which yields</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\Lambda^T \Lambda x &amp;= - A^T W A x + A^T W y \\
+(\Lambda^T \Lambda + A^T W A) x &amp;= A^T W y \\
+x &amp;= (\Lambda^T \Lambda + A^T W A)^{-1} A^T W y\end{split}\]</div>
+<p>Alternative derivation: defining the residue
+<span class="math notranslate nohighlight">\(r = Ax - y\)</span>, we instead find</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial J}{\partial x^T} = A^T W r + (\Lambda^T \Lambda) x = 0\]</div>
+<div class="math notranslate nohighlight">
+\[x = - (\Lambda^T \Lambda)^{-1} A^T W r\]</div>
+<p>we can substitute this solution for <span class="math notranslate nohighlight">\(x\)</span> back into
+<span class="math notranslate nohighlight">\(r\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[r (I + A (\Lambda^T \Lambda)^{-1} A^T W) = - y\]</div>
+<p>The simplest choice of <span class="math notranslate nohighlight">\(\Lambda = \lambda I\)</span>, in which case this equation
+simplifies to</p>
+<div class="math notranslate nohighlight">
+\[r (I + \frac{1}{\lambda^2} A A^T W) = - y\]</div>
+<p>We introduce the following notation:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}T &amp;= \Lambda^T \Lambda \\
+H_y &amp;= A A^T \\
+H_x &amp;= A^T A
+R_y &amp;= (I + A (\Lambda^T \Lambda)^{-1} A^T W)\end{split}\]</div>
+<p>This notation is chosen because <span class="math notranslate nohighlight">\(H_x\)</span> is the Hessian of <span class="math notranslate nohighlight">\(x\)</span>, and
+<span class="math notranslate nohighlight">\(H_y = A A^T\)</span> can be thought of as the Hessian of <span class="math notranslate nohighlight">\(y\)</span>. <span class="math notranslate nohighlight">\(R_y\)</span>
+is so named because it is the regularized version of <span class="math notranslate nohighlight">\(A\)</span>.</p>
+</div>
+<div class="section" id="multiple-datasets">
+<h2>Multiple Datasets<a class="headerlink" href="#multiple-datasets" title="Permalink to this headline">¶</a></h2>
+<p>In the previous section <span class="math notranslate nohighlight">\(y\)</span> was assumed to be a vector.
+(Technically, a <span class="math notranslate nohighlight">\((N_y, 1)\)</span>-matrix.)
+However, it is perfectly allowed to regularize multiple data sets at once by
+turning it into a <span class="math notranslate nohighlight">\((N_y, N_{sets})\)</span>-matrix, where <span class="math notranslate nohighlight">\(N_{sets}\)</span> is the
+number of data sets. The function <span class="math notranslate nohighlight">\(J\)</span> then becomes</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}J_k &amp;= \frac{1}{2} (A x_k - y_k)^T W (A x_k - y_k) + \frac{1}{2} \vert \Lambda x_k \vert^2 \\
+J &amp;= \sum_{k=1}^{N_{sets}} J_k\end{split}\]</div>
+</div>
+<div class="section" id="functionals">
+<h2>Functionals<a class="headerlink" href="#functionals" title="Permalink to this headline">¶</a></h2>
+<p>Things get truly interesting, and surprisingly simple, when we work with
+functionals instead. We start from</p>
+<div class="math notranslate nohighlight">
+\[J = \frac{1}{2} \sum_{i=1}^{N} ( \int_{-\infty}^{\infty} A_i(t) x(t) dt - y_i)^2 + \frac{1}{2} \int_{-\infty}^{\infty} (\Lambda(t) x(t))^2 dt\]</div>
+<p>where <span class="math notranslate nohighlight">\(A_i(t)\)</span> is the kernel of integral, for example <span class="math notranslate nohighlight">\(e^{- s_i t}\)</span>
+for a Laplace transform. As always, there is some ambiguity/freedom in the shape
+of <span class="math notranslate nohighlight">\(\Lambda\)</span>. Here it is written as a scalar function, but it could also
+be chosen as a constant, or as a function with index <span class="math notranslate nohighlight">\(i\)</span>.</p>
+<p>Repeating the same steps as above, we find that</p>
+<div class="math notranslate nohighlight">
+\[x(t) = - \frac{1}{\Lambda(t)^2} \sum_{i=1}^{N} A_i(t) r_i\]</div>
+<p>which leads to</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}r_i &amp;= \int_{-\infty}^{\infty} A_i(t) x(t) dt - y \\
+r_i &amp;= - \sum_{j=1}^{N} r_j \int_{-\infty}^{\infty} \frac{A_j(t) A_i(t)}{\Lambda(t)^2} dt - y
+r_i &amp;= - \sum_{j=1}^{N} r_j M_{ij} - y\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(M_ij = \int_{-\infty}^{\infty} \frac{A_j(t) A_i(t)}{\Lambda(t)^2} dt\)</span>.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Tikhonov</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Tikhonov</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Definitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#matrices">Matrices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multiple-datasets">Multiple Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#functionals">Functionals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="outline.html">API Outline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Module Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="tutorial.html" title="previous chapter">Tutorial</a></li>
+      <li>Next: <a href="outline.html" title="next chapter">API Outline</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Martin Roelfs.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/definitions.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
