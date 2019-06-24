@@ -4,7 +4,16 @@ python:
 - 3.5
 - 3.7
 install: pip install -U tox-travis
-script: tox
+
+before_script:
+  - pip install --upgrade pytest coveralls
+script:
+  - tox
+  - coverage run --source symfit -m py.test
+  - coverage report
+
+after_success:
+  - coveralls
 deploy:
   provider: pypi
   distributions: sdist bdist_wheel
