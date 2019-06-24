@@ -14,7 +14,7 @@ Tikhonov
         :alt: Documentation Status
 
 .. image:: https://coveralls.io/repos/github/tBuLi/Tikhonov/badge.svg?branch=master
-:target: https://coveralls.io/github/tBuLi/Tikhonov?branch=master
+        :target: https://coveralls.io/github/tBuLi/Tikhonov?branch=master
 
 
 
