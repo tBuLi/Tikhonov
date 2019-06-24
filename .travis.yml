@@ -9,7 +9,7 @@ before_script:
   - pip install --upgrade pytest coveralls
 script:
   - tox
-  - coverage run --source symfit -m py.test
+  - coverage run --source tikhonov -m py.test
   - coverage report
 
 after_success:
