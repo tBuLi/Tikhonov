@@ -89,11 +89,17 @@ class Regularizer(sf.Fit):
                'explicitly.').format(list(data.keys()))
         raise TypeError(msg)
 
-    def execute(self, **minimizer_kwargs):
+    def generator_execute(self, *, k_start=0, **minimizer_kwargs):
         """
-        Hand the rains to :mod:`symfit`, and regularize that inversion.
+        Hand over the rains to :mod:`symfit`, and regularize that inversion. Use
+        this in case of a very expensive calculation, so the results can e.g.
+        be written to disk.
+
+        :param k_start:
+        :param minimizer_kwargs:
+        :return: generator over the subfits per data set, starting from dataset
+            ``k_start``.
         """
-        fit_results = []
         # Select the symbols which depend on all the data sets
         global_symbols = []
         local_symbols = {}
@@ -105,7 +111,7 @@ class Regularizer(sf.Fit):
 
         local_model = self.localize_model(local_symbols)
 
-        for set_index in range(self.shapes[N_sets]):
+        for set_index in range(k_start, self.shapes[N_sets]):
             # Select the right component
             data = self.data.copy()
             for s in global_symbols:
@@ -119,8 +125,24 @@ class Regularizer(sf.Fit):
             model_ans = fit.model(**key2str(fit.independent_data),
                                   **fit_result.params)
             fit_result.model_ans = model_ans
-            fit_results.append(fit_result)
-        
+
+            yield fit_result
+
+    def execute(self, *, k_start=0, **minimizer_kwargs):
+        """
+        Execute the regularization. Returns list of the
+         :class:`~symfit.core.fit_results.FitResults` as returned by ``symfit``
+         for all the different datasets. If this does not make sence for memory
+         reasons, consider using ``Regularizer.generator_execute`` instead.
+
+        :param k_start: Optional, start from dataset ``k``. Good when execution
+            was interupted.
+        :param minimizer_kwargs: all this is passed on to ``symfit``'s
+            ``Fit.execute``.
+        :return: list of :class:`~symfit.core.fit_results.FitResults`.
+        """
+        fit_results = list(self.generator_execute(k_start=k_start, **minimizer_kwargs))
+
         if self.shapes[N_sets] == 1:
             return fit_results[0]
         else:

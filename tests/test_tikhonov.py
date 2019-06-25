@@ -109,3 +109,15 @@ def test_regularizer_multiple_datasets(laplace_dataset):
     assert len(results) == N_sets
     for i in range(N_sets):
         assert isinstance(results[i], FitResults)
+
+def test_generator(laplace_dataset):
+    """
+    Test if we can call this function as a generator instead.
+    """
+    M_mat = laplace_dataset[M_y]
+    y_mat = laplace_dataset[y]
+    delta = laplace_dataset[d]
+
+    reg = Regularizer(data={M_y: M_mat, y: y_mat, d: delta})
+    for fit_result in reg.generator_execute():
+        assert isinstance(fit_result, FitResults)
