@@ -1,0 +1,26 @@
+import symfit as sf
+
+N_x, N_y, N_sets = sf.symbols('N_x, N_y, N_sets')
+T_x = sf.MatrixSymbol('T_x', N_x, N_x)
+T_y = sf.MatrixSymbol('T_y', N_y, N_y)
+M_x = sf.MatrixSymbol('M_x', N_x, N_x)
+M_y = sf.MatrixSymbol('M_y', N_y, N_y)
+H_x = sf.MatrixSymbol('H_x', N_x, N_x)
+H_y = sf.MatrixSymbol('H_y', N_y, N_y)
+W_x = sf.MatrixSymbol('W_x', N_x, N_x)  # Weight matrix, i.e. inverse covariance
+W_y = sf.MatrixSymbol('W_y', N_y, N_y)
+R_x = sf.MatrixSymbol('R_x', N_x, N_x)  # Regularizer matrix
+R_y = sf.MatrixSymbol('R_y', N_y, N_y)
+I_x = sf.Identity(N_x)
+I_y = sf.Identity(N_y)
+A = sf.MatrixSymbol('A', N_y, N_x)
+y = sf.MatrixSymbol('y', N_y, N_sets)
+y_stdev = sf.MatrixSymbol('y_stdev', N_y, N_sets)
+x = sf.MatrixSymbol('x', N_x, N_sets)
+r = sf.MatrixSymbol('r', N_y, N_sets)
+d = sf.MatrixSymbol('d', 1, N_sets)
+a = sf.Parameter('alpha')
+morozov = sf.MatrixSymbol('morozov', 1, N_sets)
+i = sf.Idx('i', (1, N_x))
+j = sf.Idx('j', (1, N_y))
+k = sf.Idx('k', (1, N_sets))
